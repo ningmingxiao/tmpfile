@@ -9,14 +9,17 @@ jobs:
         uses: actions/checkout@v5
       - name: install docker
         run: |
-          sudo apt install -y docker.io make git
-      - name: git clone 
-        run: |
-          sudo git clone https://github.com/ningmingxiao/k3s.git
+          sudo apt update
+          sudo apt remove containerd.io
+          sudo apt install -y make git docker.io
+          sudo systemctl enable --now docker
+      - name: Checkout k3s source
+        uses: actions/checkout@v4
+        with:
+          repository: ningmingxiao/k3s
+          path: ./k3s-src
 
-      - name: build
-        shell: bash
-        working-directory: k3s
+      - name: Build with make
         run: |
-          sudo -s
-          make local-binary
+          cd ./k3s-src
+          make binary
